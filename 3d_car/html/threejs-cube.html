@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>MacLaren</title>
+  <style>
+    body { 
+      margin: 0; 
+      overflow: hidden; 
+      background-color: #111217; 
+      font-family: Arial, sans-serif;
+    }
+    canvas { 
+      display: block; 
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  
+  <script>
+    const state = {
+      scene: null,
+      camera: null,
+      renderer: null,
+      controls: null,
+      mixer: null,
+      model: null,
+      animationActions: [],
+      activeAction: null,
+      ambientLight: null,
+      directionalLight: null,
+      clock: new THREE.Clock()
+    };
+
+    function init() {
+      setupScene();
+      setupRenderer();
+      setupCamera();
+      setupLighting();
+      setupControls();
+      loadModel();
+      animate();
+    }
+
+    function setupScene() {
+      state.scene = new THREE.Scene();
+      state.scene.background = new THREE.Color(0x111217); 
+    }
+
+    function setupRenderer() {
+      state.renderer = new THREE.WebGLRenderer({ 
+        antialias: true,
+        alpha: true,
+        preserveDrawingBuffer: false
+      });
+      state.renderer.setClearColor(0x111217, 1); 
+      state.renderer.setSize(window.innerWidth, window.innerHeight);
+      state.renderer.shadowMap.enabled = true;
+      state.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      state.renderer.physicallyCorrectLights = true;
+      state.renderer.gammaOutput = true;
+      document.body.appendChild(state.renderer.domElement);
+    }
+
+    function setupCamera() {
+      state.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+      state.camera.position.set(0, 0, 10);
+      state.camera.lookAt(0, 0, 0);
+    }
+
+    function setupLighting() {
+      state.ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+      state.scene.add(state.ambientLight);
+
+      state.directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+      state.directionalLight.position.set(5, 10, 7);
+      state.directionalLight.castShadow = true;
+      state.scene.add(state.directionalLight);
+
+      const bottomLight = new THREE.DirectionalLight(0xffffff, 1.0);
+      bottomLight.position.set(0, -5, 0);
+      state.scene.add(bottomLight);
+
+      const sideLight = new THREE.DirectionalLight(0xffffff, 1.0);
+      sideLight.position.set(-5, 0, 0);
+      state.scene.add(sideLight);
+    }
+
+    function setupControls() {
+      state.controls = new THREE.OrbitControls(state.camera, state.renderer.domElement);
+      state.controls.enableDamping = true;
+    }
+
+    function loadModel() {
+      const loader = new THREE.GLTFLoader();
+      loader.load(
+        'mclaren_mp45__formula_1.glb',
+        (gltf) => {
+          state.model = gltf.scene;
+          state.scene.add(state.model);
+          centerAndScaleModel(state.model);
+
+          if (gltf.animations && gltf.animations.length) {
+            setupAnimations(gltf.animations);
+          }
+        },
+        null,
+        (error) => {
+          console.error('Erreur de chargement:', error.message);
+        }
+      );
+    }
+
+    function centerAndScaleModel(model) {
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+
+      model.position.x -= center.x;
+      model.position.y -= center.y;
+      model.position.z -= center.z;
+
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale = 5 / maxDim;
+      model.scale.set(scale, scale, scale);
+    }
+
+    function setupAnimations(animations) {
+      state.mixer = new THREE.AnimationMixer(state.model);
+
+      animations.forEach((clip) => {
+        const action = state.mixer.clipAction(clip);
+        state.animationActions.push(action);
+      });
+
+      if (state.animationActions.length > 0) {
+        playAnimation(0);
+      }
+    }
+
+    function playAnimation(index) {
+      if (index < 0 || index >= state.animationActions.length) return;
+
+      if (state.activeAction && state.activeAction.isRunning()) {
+        state.activeAction.fadeOut(0.5);
+      }
+
+      state.activeAction = state.animationActions[index];
+      state.activeAction.setLoop(THREE.LoopRepeat, Infinity);
+      state.activeAction.reset();
+      state.activeAction.fadeIn(0.5);
+      state.activeAction.play();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = state.clock.getDelta();
+      if (state.mixer && state.activeAction && state.activeAction.isRunning()) {
+        state.mixer.update(delta);
+      }
+
+      state.controls.update();
+      state.renderer.render(state.scene, state.camera);
+    }
+
+    window.addEventListener('resize', () => {
+      state.camera.aspect = window.innerWidth / window.innerHeight;
+      state.camera.updateProjectionMatrix();
+      state.renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    init();
+  </script>
+</body>
+</html>

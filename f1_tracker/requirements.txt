@@ -1,0 +1,6 @@
+streamlit==1.30.0
+fastf1==3.2.0
+matplotlib==3.7.3
+crate[sqlalchemy]==0.31.1
+pandas==2.0.3
+numpy==1.24.4

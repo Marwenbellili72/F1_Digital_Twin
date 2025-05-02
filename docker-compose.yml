@@ -1,0 +1,178 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:4.4 
+    hostname: mongo
+    container_name: mongo-db
+    ports:
+      - "127.0.0.1:27017:27017" 
+    volumes:
+      - mongo-db:/data/db
+    networks:
+      - fiware_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  crate-db:
+    image: crate:5.3.4 
+    hostname: crate-db
+    container_name: crate-db
+    ports:
+      - "127.0.0.1:4200:4200" 
+    command: >
+      crate -Cdiscovery.type=single-node
+             -Ccluster.name=democluster
+             -Chttp.cors.enabled=true
+             -Chttp.cors.allow-origin="*"
+             -Cauth.host_based.enabled=false
+             -Ccluster.routing.allocation.disk.threshold_enabled=false 
+             -Des.cgroups.hierarchy.override=/ 
+    volumes:
+      - crate-db:/data
+    environment:
+      - CRATE_HEAP_SIZE=${CRATE_HEAP_SIZE:-1g}
+    networks:
+      - fiware_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:4200/"]
+      interval: 10s
+      timeout: 5s
+      retries: 15 
+    restart: always
+
+  orion:
+    image: fiware/orion:3.8.0 
+    hostname: orion
+    container_name: orion-cb
+    ports:
+      - "127.0.0.1:1026:1026" 
+    depends_on:
+      mongo:
+        condition: service_healthy
+    command: -dbhost mongo -logLevel ${ORION_LOG_LEVEL:-DEBUG}
+    networks:
+      - fiware_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1026/version"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  quantumleap:
+    image: orchestracities/quantumleap:1.0.0 
+    hostname: quantumleap
+    container_name: quantumleap-ts
+    ports:
+      - "127.0.0.1:8668:8668" 
+    depends_on:
+      orion:
+        condition: service_healthy
+      crate-db:
+        condition: service_healthy
+    environment:
+      - QL_DEFAULT_DB=crate
+      - CRATE_HOST=crate-db
+      - ORION_URL=http://orion:1026
+      - LOGLEVEL=${QL_LOG_LEVEL:-DEBUG} 
+    networks:
+      - fiware_network
+    healthcheck:
+       test: curl --fail -s http://localhost:8668/version || exit 1
+       interval: 10s
+       timeout: 5s
+       retries: 5
+    restart: always
+
+  grafana:
+    image: grafana/grafana:9.4.7 
+    hostname: grafana
+    container_name: grafana-dash
+    ports:
+      - "127.0.0.1:3000:3000" 
+    depends_on:
+      crate-db:
+        condition: service_healthy
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_ADMIN_PASSWORD:-admin}
+      - GF_INSTALL_PLUGINS=gapit-htmlgraphics-panel 
+      - GF_INSTALL_PLUGINS=grafana-mongodb-datasource
+    networks:
+      - fiware_network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-S", "http://localhost:3000"] 
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  f1-data-generator:
+    build:
+      context: ./f1_data_generator 
+    hostname: f1-data-generator
+    container_name: f1-data-generator
+    depends_on:
+      orion:
+        condition: service_healthy
+    environment:
+      - ORION_URL=http://orion:1026 
+    env_file:
+     - ./f1_data_generator/.env 
+    networks:
+      - fiware_network
+
+  f1-tracker:
+    build:
+      context: ./f1_tracker 
+    container_name: f1-tracker
+    ports:
+      - "8501:8501" 
+    environment:
+      - CRATE_HOSTS=http://crate-db:4200
+    depends_on:
+      crate-db:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./f1_tracker/fastf1_cache_streamlit:/app/fastf1_cache_streamlit
+    networks: 
+      - fiware_network
+  3d_car:
+    image: nginx:alpine
+    container_name: 3d_car
+    volumes:
+      - ./3d_car/html:/usr/share/nginx/html:ro
+      - ./3d_car/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8081:80"
+    networks:
+      - fiware_network
+    restart: always  
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - fiware_network
+    restart: always    
+
+networks:
+  fiware_network:
+    driver: bridge
+
+volumes:
+  mongo-db:
+  crate-db:
+  grafana-data:
+  n8n_data:
