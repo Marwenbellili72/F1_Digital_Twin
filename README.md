@@ -9,7 +9,7 @@ Ce projet simule des données de télémétrie d'une voiture de F1, les enrichit
 
 ## 🧱 Architecture
 
-![Architecture](https://github.com/ton-utilisateur/ton-repo/raw/main/img.png)
+![Architecture](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/img.png)
 
 ---
 
