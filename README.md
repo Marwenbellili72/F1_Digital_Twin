@@ -30,7 +30,7 @@ The Vodafone McLaren Mercedes team built a telemetry system capable of showing:
 
 📷 Example:
 
-![Vodafone McLaren Mercedes Dashboard](https://i.pinimg.com/originals/76/1c/49/761c49de4a7e57d64d5cbb9b15e9c80f.jpg)
+![Vodafone McLaren Mercedes Dashboard](https://miro.medium.com/v2/resize:fit:1100/format:webp/0*PkrUnSBX4-In-_gw)
 
 > *Source: McLaren Technology Centre*
 
