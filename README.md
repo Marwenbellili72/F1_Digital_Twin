@@ -2,31 +2,51 @@
 
 ## 📘 Introduction
 
-This project implements a **Digital Twin** of a Formula 1 (F1) car using a modern IoT and data visualization stack based on **FIWARE**, **CrateDB**, and **Grafana**.
+This project implements a **Digital Twin** of a Formula 1 (F1) car using an IoT and data visualization stack based on **FIWARE**, **CrateDB**, and **Grafana**.
 
 ### 🔍 What is a Digital Twin?
 
-A **Digital Twin** is a virtual replica of a physical system. In our case, it's a **virtual F1 car** that mirrors the behavior and telemetry of a real racing car, using simulated data in real-time. The twin can be used for:
+A **Digital Twin** is a real-time virtual representation of a physical system—in this case, an F1 car. It mirrors telemetry data such as speed, RPM, gear, and more. The Digital Twin enables:
 
-- Monitoring performance and component status
-- Predictive maintenance or analytics
-- Racing strategy simulation
-- Learning and experimentation in smart mobility and IoT contexts
+- Continuous monitoring of the car’s performance
+- Real-time data visualization
+- Simulation for testing strategies or behaviors
+- Demonstration of smart mobility/IoT frameworks
 
 ---
 
-## ⚙️ How the Digital Twin is Built
+## 🧠 State of the Art – Real F1 Telemetry Systems
 
-- A **Python script simulates telemetry** data from a Formula 1 car.
-- This data is sent in **NGSI v2 format** to the **FIWARE Orion Context Broker**.
-- A **subscription** is created to forward updates to **QuantumLeap**, which stores them as **time series** in **CrateDB**.
-- **Grafana** is connected to CrateDB to visualize speed, RPM, gear, and more—live.
+Digital Twin technology is used heavily in Formula 1.
+
+### 🏁 Vodafone McLaren Mercedes Telemetry Dashboard (Reference)
+
+The Vodafone McLaren Mercedes team built a telemetry system capable of showing:
+
+- Live speed, RPM, gear state
+- Sector/lap timing and progress
+- Tyre pressure, brake temps, fuel levels
+- Engine diagnostics and GPS position
+
+📷 Example:
+
+![Vodafone McLaren Mercedes Dashboard](https://i.pinimg.com/originals/76/1c/49/761c49de4a7e57d64d5cbb9b15e9c80f.jpg)
+
+> *Source: McLaren Technology Centre*
+
+---
+
+## 🏗️ How the Digital Twin is Built
+
+This project emulates the behavior of an F1 car with:
+
+- A **Python-based data generator** that sends telemetry to FIWARE’s **Orion Context Broker**
+- A **subscription** to **QuantumLeap** which forwards data to **CrateDB**
+- **Grafana** dashboards for time-series analysis and visualization
 
 ---
 
 ## 🧱 System Architecture
-
-The architecture consists of **Dockerized microservices**, communicating over a virtual network.
 
 ```
 
@@ -44,14 +64,14 @@ Grafana
 
 ## 📦 docker-compose.yml Overview
 
-This file launches all required services:
+The `docker-compose.yml` launches the following services:
 
-- `orion`: Receives context data (NGSI)
-- `mongo`: MongoDB for Orion metadata
-- `quantumleap`: Time-series processor
-- `crate`: Time-series DB
-- `grafana`: Visualization
-- `f1_data_generator`: Sends simulated data
+- **orion**: Context Broker for receiving telemetry (port `1026`)
+- **mongo**: Required by Orion for context metadata
+- **quantumleap**: Translates context to time-series (port `8668`)
+- **crate**: Stores telemetry data (port `4200`)
+- **grafana**: Visualizes metrics (port `3000`)
+- **f1_data_generator**: Simulates the F1 telemetry stream
 
 ---
 
@@ -70,35 +90,35 @@ cd F1_Digital_Twin
 docker-compose up --build -d
 ```
 
-You can verify the services are running:
+### 3️⃣ Check running containers
 
 ```bash
 docker ps
 ```
 
-Expected ports:
+Services will be available at:
 
-* Orion: `localhost:1026`
-* QuantumLeap: `localhost:8668`
-* CrateDB UI: `localhost:4200`
-* Grafana: `localhost:3000`
+* Orion: `http://localhost:1026`
+* QuantumLeap: `http://localhost:8668`
+* CrateDB Admin UI: `http://localhost:4200`
+* Grafana UI: `http://localhost:3000` (default: admin/admin)
 
 ---
 
-## 🚦 NGSI Entity Model
+## 🚗 F1 Car Entity (NGSI Format)
 
-Each F1 car is modeled as an `F1_Car` entity in Orion:
+An example F1 entity sent to Orion:
 
 ```json
 {
   "id": "car001",
   "type": "F1_Car",
-  "speed": { "type": "Number", "value": 270 },
-  "rpm": { "type": "Number", "value": 15000 },
-  "gear": { "type": "Number", "value": 6 },
+  "speed": { "type": "Number", "value": 310 },
+  "rpm": { "type": "Number", "value": 14200 },
+  "gear": { "type": "Number", "value": 7 },
   "drs": { "type": "Boolean", "value": true },
-  "driverCode": { "type": "Text", "value": "HAM" },
-  "timeWithinLap": { "type": "Number", "value": 42.7 }
+  "driverCode": { "type": "Text", "value": "VER" },
+  "timeWithinLap": { "type": "Number", "value": 34.2 }
 }
 ```
 
@@ -106,7 +126,7 @@ Each F1 car is modeled as an `F1_Car` entity in Orion:
 
 ## 🔁 Subscription to QuantumLeap
 
-The script `subscription.py` registers a subscription to QuantumLeap:
+`subscription.py` sets up a subscription to send all updates from `F1_Car` entities to QuantumLeap:
 
 ```json
 {
@@ -122,17 +142,15 @@ The script `subscription.py` registers a subscription to QuantumLeap:
 }
 ```
 
-All updates are forwarded to QuantumLeap for storage in CrateDB.
-
 ---
 
-## 📊 Grafana Visualization
+## 📊 Grafana Dashboard
 
-* Grafana connects to CrateDB using PostgreSQL protocol.
-* Use the provided dashboard file `grafana.json` to import a preconfigured layout.
-* Data is visualized as graphs over time (Speed, RPM, Gear, etc.)
+* Grafana uses CrateDB as a data source (via PostgreSQL plugin).
+* The dashboard displays **real-time graphs** for speed, RPM, gear, and lap time.
+* Use `grafana.json` to import the default dashboard layout.
 
-### 👀 Example Dashboard
+### 👀 Example Screenshot
 
 ![Dashboard](img.png)
 
@@ -140,47 +158,48 @@ All updates are forwarded to QuantumLeap for storage in CrateDB.
 
 ## 🗂️ Project Structure
 
-```bash
+```
 F1_Digital_Twin/
-├── f1_data_generator/       # Telemetry simulator
-│   ├── generator.py         # Main loop
-│   └── subscription.py      # Creates Orion subscription
-├── grafana/                 # Volume mount for Grafana data
-├── grafana.json             # Dashboard export file
-├── docker-compose.yml       # Service definitions
-├── img.png                  # Screenshot
+├── f1_data_generator/
+│   ├── generator.py         # Generates and sends F1 data to Orion
+│   └── subscription.py      # Registers the subscription to QuantumLeap
+├── grafana.json             # Preconfigured dashboard export
+├── docker-compose.yml       # Main orchestration file
+├── img.png                  # Screenshot of Grafana dashboard
 └── README.md
 ```
 
 ---
 
-## 🧪 Manual Testing
+## 🧪 Testing & Querying
 
-You can use curl to test the context:
+Test Orion from the host machine:
 
 ```bash
 curl http://localhost:1026/v2/entities
 ```
 
-Or connect to CrateDB at `http://localhost:4200`:
+Access CrateDB web UI:
 
-```sql
-SELECT * FROM et_f1_car;
-```
+* Visit `http://localhost:4200`
+* Example SQL query:
+
+  ```sql
+  SELECT * FROM et_f1_car;
+  ```
 
 ---
 
 ## 📄 License
 
-MIT License – see [LICENSE](LICENSE) for full text.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
 ---
 
 ## 📬 Contact
 
-> ✉️ Marwen Bellili – [marwenbellili72@gmail.com](mailto:marwenbellili72@gmail.com)
-> GitHub: [Marwenbellili72](https://github.com/Marwenbellili72)
+> **Marwen Bellili**
+> 📧 [marwenbellili72@gmail.com](mailto:marwenbellili72@gmail.com)
+> 🐙 GitHub: [Marwenbellili72](https://github.com/Marwenbellili72)
 
 ---
-
-```
