@@ -84,17 +84,7 @@ This combination allows Grafana to act not only as a metrics dashboard, but as a
 
 ## 🧱 System Architecture
 
-```
-
-+----------------+     NGSI     +---------------+     time-series     +------------+
-\| Data Generator | -----------> | Orion Broker  | ------------------> | QuantumLeap|
-+----------------+              +---------------+                     +-----+------+
-|
-writes to CrateDB
-|
-Grafana
-
-````
+![Architecture](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/img.png)
 
 ---
 
