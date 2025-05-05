@@ -38,11 +38,47 @@ The Vodafone McLaren Mercedes team built a telemetry system capable of showing:
 
 ## 🏗️ How the Digital Twin is Built
 
-This project emulates the behavior of an F1 car with:
+This project emulates the behavior of a Formula 1 car by combining real telemetry from past races with real-time IoT architecture.
 
-- A **Python-based data generator** that sends telemetry to FIWARE’s **Orion Context Broker**
-- A **subscription** to **QuantumLeap** which forwards data to **CrateDB**
-- **Grafana** dashboards for time-series analysis and visualization
+### 🧪 Data Generation using FastF1
+
+We use the **[FastF1](https://theoehrly.github.io/Fast-F1/)** API to simulate a real F1 race session. This powerful Python library allows us to extract:
+
+- Speed
+- RPM
+- Gear
+- Driver code
+- DRS state
+- Time within the lap
+
+from actual telemetry logs (e.g., 2022 Monza Grand Prix). These values are updated in real time and **transformed into NGSI v2-compliant entities**, representing the virtual state of the car.
+
+Each entity is structured as an `F1_Car` object and sent to the **FIWARE Orion Context Broker**, which acts as the central receiver of all contextual information.
+
+### 🔁 Subscription to QuantumLeap
+
+A **subscription** is created between Orion and **QuantumLeap** (a time-series translator). This subscription allows every update on F1_Car entities to be forwarded automatically and stored in **CrateDB**, which acts as a time-series database.
+
+This creates a historical log of car behavior—exactly like in real F1 data telemetry centers.
+
+### 📊 Visualization (Grafana + Streamlit + 3D)
+
+We use a **hybrid visualization** approach:
+
+#### 📈 Grafana Dashboards
+
+- A dashboard in Grafana fetches data from CrateDB (via PostgreSQL plugin).
+- It visualizes time-series metrics: speed, RPM, gear shifts, and lap timing.
+- We use the `htmlgraphics` plugin to **embed custom HTML views** inside Grafana.
+
+#### 🖼️ Streamlit Simulation
+
+To simulate the race visually:
+- A **Streamlit app** runs alongside the backend and uses the **FastF1 API** to draw the circuit layout.
+- The **driver’s current position** is plotted live on the track.
+- A **3D McLaren car model** is served via **NGINX**, and displayed inside Grafana using the `HTMLGraphics` panel.
+
+This combination allows Grafana to act not only as a metrics dashboard, but as a **real-time cockpit**, mixing charts and 3D visualization.
 
 ---
 
