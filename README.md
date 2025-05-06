@@ -205,37 +205,44 @@ SELECT * FROM etcar WHERE entity_id = 'urn:ngsi-v2:Car:NOR:20240115';
 ```
 ![cratedb](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img5.png)
 
-### 🏎️ 2. 3D Car Model Simulation (via NGINX)
-A realistic 3D model of the McLaren F1 car is rendered inside the Grafana dashboard using the HTMLGraphics plugin.
+The CrateDB web interface is accessible via:  [http://localhost:4200](http://localhost:4200)
 
-* The 3D object is hosted and served by NGINX
-* Embedded in Grafana via an <iframe> using the HTML panel
-* Gives a realistic visualization of the car model during simulation
+### 🏎️ 2. 3D Car Model Simulation (via NGINX)
+
+A realistic **3D model of the McLaren F1 car** is rendered inside the Grafana dashboard using the **HTMLGraphics plugin**.
+
+* The 3D object is built using **Three.js**, a JavaScript library for 3D graphics in the browser.
+* It is served via **NGINX**, accessible at: [http://localhost:8081](http://localhost:8081)
+* The model is embedded into Grafana using an `<iframe>` within the **HTML panel plugin**
 ![3dmodel](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img6.png)
 
 ### 📍 3. Race Tracker Simulation with Streamlit
-A custom Streamlit application simulates the position of the F1 car using FastF1 API.
 
-* Replays a real session (Italian GP 2023 - Race)
-* Shows driver movement (NOR) on the track in real time
-* Enhances digital twin realism by combining telemetry with context
+A custom **Streamlit** application simulates the position of the F1 car on the racing circuit using the **FastF1 API**.
+
+* Replays a real F1 session (Italian GP 2023 - Race)
+* Displays real-time movement of the driver (`NOR`) on the track
+* Enhances digital twin realism by combining actual race data and simulation
+
+The Streamlit interface is accessible via: [http://localhost:8501](http://localhost:8501)
+
 ![racetracker](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img7.png)
 
+
 ### 📈 4. Grafana Dashboards
-Real-time dashboards in Grafana visualize key performance indicators of the virtual F1 car:
 
-* 🚀 Speed, RPM, Gear
+**Real-time Grafana dashboards** visualize key performance indicators of the virtual F1 car throughout the simulation:
 
-* 🧭 Driver position on the track (x, y)
+- 🚀 Speed, RPM, and Gear
+- 🧭 Driver position on the track (coordinates `x`, `y`)
+- 🦶 Throttle and Brake pressure
+- ⏱️ Lap number and lap timing
 
-* 🦶 Throttle and Brake pressure
+These dashboards are connected to **CrateDB**, receiving live updates via **QuantumLeap** as data is published by the Orion Context Broker.
 
-* ⏱️ Lap number and timing
+The Grafana interface is accessible via: [http://localhost:3000](http://localhost:3000)
 
-Dashboards are connected to CrateDB and updated continuously as simulation progresses.
 ![grafana](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img8.png)
-
-
 
 ---
 ## 🗂️ Project Structure
