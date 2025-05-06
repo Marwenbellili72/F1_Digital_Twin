@@ -163,7 +163,8 @@ Services will be available at:
 
 ## 📡 Retrieve Data from Orion
 Once the data is being generated, you can retrieve the current state of a specific car with:
-```curl -X GET \
+```bash
+curl -X GET \
   'http://localhost:1026/v2/entities/urn:ngsi-v2:Car:NOR:20240115' \
   -H 'Accept: application/json'
 ```
