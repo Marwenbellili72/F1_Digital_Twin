@@ -170,19 +170,13 @@ Once the data is being generated, you can retrieve the current state of a specif
 ![postman](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img3.png)
 This will return real-time data like:
 
-Speed (km/h)
-
-RPM
-
-Gear
-
-Position (x, y)
-
-Throttle, Brake, DRS
-
-Lap number
-
-Observed date/time
+* Speed (km/h)
+* RPM
+* Gear
+* Position (x, y)
+* Throttle, Brake, DRS
+* Lap number
+* Observed date/time
 
 ---
 
