@@ -199,7 +199,14 @@ This will return real-time data like:
 ```
 
 ---
+🚗 F1 Car Entity (NGSI Format)
+This is an example of an NGSI v2 entity representing the state of a Formula 1 car (driverCode = NOR). It includes attributes like speed, RPM, throttle, gear, position, and contextual information about the race session.
 
+To better understand and visualize the structure, the following JSON was formatted using JSON Crack:
+
+![jsoncrack](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img4.png)
+
+---
 ## 📊 Grafana Dashboard
 
 * Grafana uses CrateDB as a data source (via PostgreSQL plugin).
