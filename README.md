@@ -187,19 +187,21 @@ To better understand and visualize the structure, the following JSON was formatt
 
 ![jsoncrack](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img4.png)
 
----
-## 📊 Grafana Dashboard
+## 📊 Results and Visualizations
 
-* Grafana uses CrateDB as a data source (via PostgreSQL plugin).
-* The dashboard displays **real-time graphs** for speed, RPM, gear, and lap time.
-* Use `grafana.json` to import the default dashboard layout.
-
-### 👀 Example Screenshot
-
-![Dashboard](img.png)
+This section highlights the outcomes of the Digital Twin simulation pipeline and how each component contributes to visualizing the virtual F1 experience.
 
 ---
+### 🛠️ 1. Real-Time Telemetry in CrateDB
 
+All telemetry data (speed, RPM, gear, location, lap time, etc.) sent to **FIWARE Orion Context Broker** is forwarded via **QuantumLeap** to **CrateDB**.
+
+You can query CrateDB directly to inspect the recorded time-series data:
+
+```sql
+SELECT * FROM etcar WHERE entity_id = 'urn:ngsi-v2:Car:NOR:20240115';
+```
+---
 ## 🗂️ Project Structure
 
 ```
