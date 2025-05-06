@@ -82,23 +82,69 @@ To simulate the race visually:
 This combination allows Grafana to act not only as a metrics dashboard, but as a **real-time cockpit**, mixing charts and 3D visualization.
 
 ---
+## 🧩 System Architecture Overview
 
-## 🧱 System Architecture
+The following diagram illustrates the end-to-end architecture of the F1 Digital Twin platform, integrating telemetry ingestion, data storage, visualization, and simulation components—all containerized using Docker.
 
-![Architecture](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/img.png)
+### 🔁 1. Telemetry Ingestion
 
----
+- **FastF1** is used to extract real-world race telemetry (e.g., Italian GP 2023).
+- Data is injected into the system via a **FastAPI service** (`f1_data_generator`).
+- This service communicates with the **FIWARE Orion Context Broker** via port `8000:8000`.
+- Manual queries can also be sent using `curl` or **Postman** on port `1026:1026`.
 
-## 📦 docker-compose.yml Overview
+### 📡 2. Context Management (FIWARE)
 
-The `docker-compose.yml` launches the following services:
+- The **Orion Context Broker** receives NGSI-v2 entities and forwards them:
+  - To **MongoDB** (port `27017`) for temporary storage.
+  - To **QuantumLeap** (port `8668`) for time-series processing.
+  - Finally, to **CrateDB** (port `4200`) for long-term historical storage.
 
-- **orion**: Context Broker for receiving telemetry (port `1026`)
-- **mongo**: Required by Orion for context metadata
-- **quantumleap**: Translates context to time-series (port `8668`)
-- **crate**: Stores telemetry data (port `4200`)
-- **grafana**: Visualizes metrics (port `3000`)
-- **f1_data_generator**: Simulates the F1 telemetry stream
+### 💾 3. Time-Series Database
+
+- **MongoDB** is used for internal FIWARE context persistence.
+- **CrateDB** is the main time-series database queried for dashboards and analytics.
+- It holds all telemetry data (speed, RPM, gear, location, lap times, etc.).
+
+### 📊 4. Grafana Visualization
+
+- **Grafana** is connected to CrateDB and visualizes real-time metrics:
+  - 🚀 Speed, RPM, Gear
+  - 🧭 Car position on track (x, y)
+  - 🦶 Throttle & Brake pressure
+  - ⏱️ Lap numbers and time
+- Accessible at [`http://localhost:3000`](http://localhost:3000)
+
+### 🧭 5. Race Tracker (Streamlit)
+
+- A custom **Streamlit app** simulates the car’s position during a real race session.
+- Uses FastF1 API to track the driver in real time.
+- Accessible at [`http://localhost:8501`](http://localhost:8501)
+
+### 🚗 6. 3D Car Model Simulation (NGINX)
+
+- A realistic 3D **McLaren F1** model is rendered using **Three.js**.
+- Hosted on an **NGINX** server and embedded into Grafana via an `<iframe>`.
+- Accessible at [`http://localhost:8081`](http://localhost:8081)
+
+### 🐳 7. Dockerized Deployment
+
+- All components are containerized using **Docker** and orchestrated via **Docker Compose**.
+- Each service runs on its own port, enabling modular and scalable integration.
+
+### 🔌 Ports Summary
+
+| Component         | Port         | Purpose                                 |
+|------------------|---------------|------------------------------------------|
+| Orion Context Broker | `1026`    | Receives NGSI-v2 data                   |
+| FastAPI (Data Generator) | `8000`| Sends FastF1 telemetry to Orion         |
+| MongoDB          | `27017`       | Context data persistence                 |
+| QuantumLeap      | `8668`        | Time-series forwarding to CrateDB        |
+| CrateDB          | `4200`        | Time-series database                     |
+| Grafana          | `3000`        | Dashboards and real-time metrics         |
+| NGINX (3D Car)   | `8081`        | 3D model visualization                   |
+| Streamlit Tracker| `8501`        | Live race tracking                       |
+
 ![docker-compose](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img2.png)
 ---
 
