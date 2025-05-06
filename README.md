@@ -116,10 +116,40 @@ cd F1_Digital_Twin
 docker-compose up --build -d
 ```
 
-### 3️⃣ Check running containers
+### 3️⃣ Create a Notification Subscription
+
+To enable real-time updates from the Orion Context Broker to QuantumLeap (or any consumer), a **notification subscription** must be created.
+
+This is done by sending a `POST` request to Orion's `/v2/subscriptions` endpoint. Below is an example using `curl`:
 
 ```bash
-docker ps
+curl -X POST \
+  'http://localhost:1026/v2/subscriptions' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "description": "Notify QuantumLeap of F1 Car Telemetry Changes including position",
+  "subject": {
+    "entities": [
+      {
+        "idPattern": ".*",
+        "type": "Car"
+      }
+    ],
+    "condition": {
+      "attrs": [ "speed", "rpm", "gear", "throttle", "brake", "drs", "distance", "lapNumber", "timeWithinLap", "simulatedElapsedTime", "x", "y" ]
+    }
+  },
+  "notification": {
+    "http": {
+      "url": "http://quantumleap:8668/v2/notify"
+    },
+    "attrs": [ "speed", "rpm", "gear", "throttle", "brake", "drs", "distance", "driverCode", "lapNumber", "timeWithinLap", "simulatedElapsedTime", "simulationSessionKey", "x", "y" ],
+    "metadata": [ "dateObserved" ],
+    "attrsFormat": "normalized",
+    "throttling": 1
+  },
+  "expires": "2030-01-01T00:00:00.00Z"
+}'
 ```
 
 Services will be available at:
