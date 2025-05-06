@@ -179,26 +179,6 @@ This will return real-time data like:
 * Observed date/time
 
 ---
-
-## 🔁 Subscription to QuantumLeap
-
-`subscription.py` sets up a subscription to send all updates from `F1_Car` entities to QuantumLeap:
-
-```json
-{
-  "description": "Notify QuantumLeap",
-  "subject": {
-    "entities": [{ "idPattern": ".*", "type": "F1_Car" }]
-  },
-  "notification": {
-    "http": { "url": "http://quantumleap:8668/v2/notify" },
-    "attrsFormat": "normalized"
-  },
-  "throttling": 1
-}
-```
-
----
 ## 🚗 F1 Car Entity (NGSI Format)
 This is an example of an NGSI v2 entity representing the state of a Formula 1 car (driverCode = NOR). It includes attributes like speed, RPM, throttle, gear, position, and contextual information about the race session.
 
