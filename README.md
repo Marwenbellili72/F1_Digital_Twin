@@ -98,7 +98,7 @@ The `docker-compose.yml` launches the following services:
 - **crate**: Stores telemetry data (port `4200`)
 - **grafana**: Visualizes metrics (port `3000`)
 - **f1_data_generator**: Simulates the F1 telemetry stream
-
+![docker-compose](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img2.png)
 ---
 
 ## 🔧 Installation & Startup
