@@ -187,11 +187,13 @@ To better understand and visualize the structure, the following JSON was formatt
 
 ![jsoncrack](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img4.png)
 
+---
+
 ## 📊 Results and Visualizations
 
 This section highlights the outcomes of the Digital Twin simulation pipeline and how each component contributes to visualizing the virtual F1 experience.
 
----
+
 ### 🛠️ 1. Real-Time Telemetry in CrateDB
 
 All telemetry data (speed, RPM, gear, location, lap time, etc.) sent to **FIWARE Orion Context Broker** is forwarded via **QuantumLeap** to **CrateDB**.
@@ -201,6 +203,46 @@ You can query CrateDB directly to inspect the recorded time-series data:
 ```sql
 SELECT * FROM etcar WHERE entity_id = 'urn:ngsi-v2:Car:NOR:20240115';
 ```
+
+### 🛠️ 1. Real-Time Telemetry in CrateDB
+
+All telemetry data (speed, RPM, gear, location, lap time, etc.) sent to **FIWARE Orion Context Broker** is forwarded via **QuantumLeap** to **CrateDB**.
+
+You can query CrateDB directly to inspect the recorded time-series data:
+
+```sql
+SELECT * FROM etcar WHERE entity_id = 'urn:ngsi-v2:Car:NOR:20240115';
+```
+
+### 🏎️ 2. 3D Car Model Simulation (via NGINX)
+A realistic 3D model of the McLaren F1 car is rendered inside the Grafana dashboard using the HTMLGraphics plugin.
+
+* The 3D object is hosted and served by NGINX
+* Embedded in Grafana via an <iframe> using the HTML panel
+* Gives a realistic visualization of the car model during simulation
+
+### 📍 3. Race Tracker Simulation with Streamlit
+A custom Streamlit application simulates the position of the F1 car using FastF1 API.
+
+* Replays a real session (Italian GP 2023 - Race)
+* Shows driver movement (NOR) on the track in real time
+* Enhances digital twin realism by combining telemetry with context
+
+### 📈 4. Grafana Dashboards
+Real-time dashboards in Grafana visualize key performance indicators of the virtual F1 car:
+
+* 🚀 Speed, RPM, Gear
+
+* 🧭 Driver position on the track (x, y)
+
+* 🦶 Throttle and Brake pressure
+
+* ⏱️ Lap number and timing
+
+Dashboards are connected to CrateDB and updated continuously as simulation progresses.
+
+
+
 ---
 ## 🗂️ Project Structure
 
