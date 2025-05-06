@@ -201,7 +201,9 @@ All telemetry data (speed, RPM, gear, location, lap time, etc.) sent to **FIWARE
 You can query CrateDB directly to inspect the recorded time-series data:
 
 ```sql
-SELECT * FROM etcar WHERE entity_id = 'urn:ngsi-v2:Car:NOR:20240115';
+SELECT entity_id, entity_type, time_index, fiware_servicepath, __original_ngsi_entity__, instanceid, speed, rpm, gear, throttle, brake, drs, distance, drivercode, lapnumber, timewithinlap, simulatedelapsedtime, simulationsessionkey, x, y
+FROM "doc"."etcar"
+LIMIT 100;
 ```
 ![cratedb](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img5.png)
 
