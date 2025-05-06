@@ -54,6 +54,7 @@ We use the **[FastF1](https://theoehrly.github.io/Fast-F1/)** API to simulate a 
 from actual telemetry logs (e.g., 2022 Monza Grand Prix). These values are updated in real time and **transformed into NGSI v2-compliant entities**, representing the virtual state of the car.
 
 Each entity is structured as an `F1_Car` object and sent to the **FIWARE Orion Context Broker**, which acts as the central receiver of all contextual information.
+![fastf1](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img9.png)
 
 ### 🔁 Subscription to QuantumLeap
 
