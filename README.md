@@ -161,22 +161,28 @@ Services will be available at:
 
 ---
 
-## 🚗 F1 Car Entity (NGSI Format)
-
-An example F1 entity sent to Orion:
-
-```json
-{
-  "id": "car001",
-  "type": "F1_Car",
-  "speed": { "type": "Number", "value": 310 },
-  "rpm": { "type": "Number", "value": 14200 },
-  "gear": { "type": "Number", "value": 7 },
-  "drs": { "type": "Boolean", "value": true },
-  "driverCode": { "type": "Text", "value": "VER" },
-  "timeWithinLap": { "type": "Number", "value": 34.2 }
-}
+## 📡 Retrieve Data from Orion
+Once the data is being generated, you can retrieve the current state of a specific car with:
+```curl -X GET \
+  'http://localhost:1026/v2/entities/urn:ngsi-v2:Car:NOR:20240115' \
+  -H 'Accept: application/json'
 ```
+![postman](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img3.png)
+This will return real-time data like:
+
+Speed (km/h)
+
+RPM
+
+Gear
+
+Position (x, y)
+
+Throttle, Brake, DRS
+
+Lap number
+
+Observed date/time
 
 ---
 
