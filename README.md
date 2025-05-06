@@ -204,16 +204,6 @@ You can query CrateDB directly to inspect the recorded time-series data:
 SELECT * FROM etcar WHERE entity_id = 'urn:ngsi-v2:Car:NOR:20240115';
 ```
 
-### 🛠️ 1. Real-Time Telemetry in CrateDB
-
-All telemetry data (speed, RPM, gear, location, lap time, etc.) sent to **FIWARE Orion Context Broker** is forwarded via **QuantumLeap** to **CrateDB**.
-
-You can query CrateDB directly to inspect the recorded time-series data:
-
-```sql
-SELECT * FROM etcar WHERE entity_id = 'urn:ngsi-v2:Car:NOR:20240115';
-```
-
 ### 🏎️ 2. 3D Car Model Simulation (via NGINX)
 A realistic 3D model of the McLaren F1 car is rendered inside the Grafana dashboard using the HTMLGraphics plugin.
 
