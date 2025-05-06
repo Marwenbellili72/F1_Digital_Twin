@@ -203,6 +203,7 @@ You can query CrateDB directly to inspect the recorded time-series data:
 ```sql
 SELECT * FROM etcar WHERE entity_id = 'urn:ngsi-v2:Car:NOR:20240115';
 ```
+![cratedb](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img5.png)
 
 ### 🏎️ 2. 3D Car Model Simulation (via NGINX)
 A realistic 3D model of the McLaren F1 car is rendered inside the Grafana dashboard using the HTMLGraphics plugin.
@@ -210,6 +211,7 @@ A realistic 3D model of the McLaren F1 car is rendered inside the Grafana dashbo
 * The 3D object is hosted and served by NGINX
 * Embedded in Grafana via an <iframe> using the HTML panel
 * Gives a realistic visualization of the car model during simulation
+![3dmodel](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img6.png)
 
 ### 📍 3. Race Tracker Simulation with Streamlit
 A custom Streamlit application simulates the position of the F1 car using FastF1 API.
@@ -217,6 +219,7 @@ A custom Streamlit application simulates the position of the F1 car using FastF1
 * Replays a real session (Italian GP 2023 - Race)
 * Shows driver movement (NOR) on the track in real time
 * Enhances digital twin realism by combining telemetry with context
+![racetracker](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img7.png)
 
 ### 📈 4. Grafana Dashboards
 Real-time dashboards in Grafana visualize key performance indicators of the virtual F1 car:
@@ -230,6 +233,7 @@ Real-time dashboards in Grafana visualize key performance indicators of the virt
 * ⏱️ Lap number and timing
 
 Dashboards are connected to CrateDB and updated continuously as simulation progresses.
+![grafana](https://github.com/Marwenbellili72/F1_Digital_Twin/blob/main/assets/img8.png)
 
 
 
